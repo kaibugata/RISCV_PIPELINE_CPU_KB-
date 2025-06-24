@@ -3,8 +3,8 @@ module PC #(
 )(
     input logic clk_i,
     input logic reset_i,
-    input logic [$clog2(MaxNumInstruc)-1:0] PC_i,
-    output logic [$clog2(MaxNumInstruc)-1:0] PC_o
+    input logic [63:0] PC_i,
+    output logic [63:0] PC_o
 );
 
 //The program counter takes in an input which is the input of the pc and passes that to the output

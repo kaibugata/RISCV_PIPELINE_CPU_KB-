@@ -1,8 +1,8 @@
 module mainALU(
-    input [31:0] op1,
-    input [31:0] op2,
+    input [63:0] op1,
+    input [63:0] op2,
     input [3:0] operand,
-    output [31:0] out,
+    output [63:0] out,
     output zero,
 );
 
