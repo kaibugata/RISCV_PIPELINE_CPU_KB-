@@ -2,8 +2,8 @@ module Instruction_Parser (
     input logic [31:0] Instruction,
     output [3:0] rd,rs1,rs2,
     output [2:0] funct3,
-    output [3:0] opcode,
-    output [5:0] funct7,
+    output [6:0] opcode,
+    output [6:0] funct7,
     output [$clog2(6)-1:0] I_Type
 
 )

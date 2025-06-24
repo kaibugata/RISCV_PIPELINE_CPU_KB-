@@ -1,7 +1,7 @@
 module Control (
     input [2:0] funct3,
-    input [3:0] opcode,
-    input [5:0] funct7,
+    input [6:0] opcode,
+    input [6:0] funct7,
     input [$clog2(6)-1:0] I_Type,
     output RegWrite, MemWrite, MemRead, ALUSrc,
     output [2:0] ALUOp
@@ -22,6 +22,27 @@ assign ALUSrc = (I_Type == 3) || (I_Type == 4) || (I_Type == 2); //1 for taking 
 //010 = AND
 //011 = OR
 //100 = XOR
+//101 = SL
+//110 = SR
+
+always_comb begin : aluOP
+    if((opcode == 7'h3)||(opcode == 7'h13 && funct3 == 3'b0)||(opcode == 7'h17)||(opcode == 7'h23)||(opcode == 7'h33 && funct7 == 7'b0)||(opcode == 7'h37)||(opcode == 7'h6F)||(opcode == 7'h67)) begin
+        ALUOp = 3'b000;//ADD
+    end else if((opcode == 7'h33 && funct7 == 7'b0100000)||(opcode == 7'h63)||(opcode == 7'h33 && (funct3 == 3'b010 || funct3 == 3'b011))||(opcode == 7'h13 && (funct3 == 3'b010 || funct3 == 3'b011)))begin
+        ALUOp = 3'b001;//SUB
+    end else if((opcode == 7'h13 && funct3 == 3'b111)||(opcode == 7'h33 && funct3 == 3'b111))begin
+        ALUOp = 3'b010;//AND
+    end else if((opcode == 7'h13 && funct3 == 3'b110)||(opcode == 7'h33 && funct3 == 3'b110))begin
+        ALUOp = 3'b011;//OR
+    end else if((opcode == 7'h13 && funct3 == 3'b100)||(opcode == 7'h33 && funct3 == 3'b100))begin
+        ALUOp = 3'b011;//XOR
+    end else if((opcode == 7'h13 && funct3 == 3'b001)||(opcode == 7'h33 && funct3 == 3'b001))begin
+        ALUOp = 3'b101;//SL
+    end else if((opcode == 7'h13 && funct3 == 3'b101)||(opcode == 7'h33 && funct3 == 3'b101))begin
+        ALUOp = 3'b110;//SR
+    end
+end
+
 
 
 endmodule
