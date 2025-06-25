@@ -1,4 +1,4 @@
-module PC #(
+module ProgCount #(
     parameter int MaxNumInstruc = 100
 )(
     input logic clk_i,

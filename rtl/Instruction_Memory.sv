@@ -1,16 +1,12 @@
-module mem_Rsync #(
+module Instruction_Memory #(
     parameter int DataWidth = 32,
     parameter int NumEntries = 31,
-    parameter string ReadmembFilename = "memory_init_file.memb" //cannot use with digitaljs
+    parameter string ReadmembFilename = "instruction_memory_init_file.memb" //cannot use with digitaljs
 ) (
     input  logic clk_i,
     input  logic reset_i,
 
-    input  logic                          wr_valid_i,
-    input  logic [DataWidth-1:0]          wr_data_i,
-    input  logic [$clog2(NumEntries)-1:0] wr_addr_i,
-
-    input  logic                          rd_valid_i,
+    input  logic                          rd_valid_i,//maybe not needed
     input  logic [$clog2(NumEntries)-1:0] rd_addr_i,
     output logic [DataWidth-1:0]          rd_data_o
 );
@@ -39,9 +35,6 @@ always_ff @(posedge clk_i) begin
     end else begin
         if(rd_valid_i) begin
             rd_data_o <= mem[rd_addr_i];
-        end
-        if(wr_valid_i) begin
-            mem[wr_addr_i] <= wr_data_i;
         end
     end
 end

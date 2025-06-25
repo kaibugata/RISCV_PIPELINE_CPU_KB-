@@ -6,7 +6,7 @@ module mem_Register #(
     input  logic clk_i,
     input  logic reset_i,
 
-    //wr_vlaid is a control signal depending on if the rd was valid(depoends on inst type) S and SB instructions dont use rd
+    //wr_valid is a control signal depending on if the rd was valid(depoends on inst type) S and SB instructions dont use rd
 
     input  logic                          wr_valid_i,
     input  logic [DataWidth-1:0]          wr_data_i,
@@ -48,11 +48,10 @@ module mem_Register #(
 
 always_ff @(posedge clk_i) begin
     if(reset_i) begin
+        //maybe add reset logic
+
 
     end else begin
-        // if(rd_valid_i) begin
-        //     rd_data_o <= mem[rd_addr_i];
-        // end
 
         if(rs1_valid_i) begin
             rs1_data_o <= mem[rs1_addr_i];
