@@ -3,7 +3,7 @@ module Control (
     input [6:0] opcode,
     input [6:0] funct7,
     input [$clog2(6)-1:0] I_Type,
-    output RegWrite, MemWrite, MemRead, ALUSrc,
+    output RegWrite, MemWrite, MemRead, ALUSrc, MemToReg,
     output [2:0] ALUOp
 
 );
@@ -13,6 +13,7 @@ assign RegWrite = (I_Type == 3) || (I_Type == 0) || (I_Type == 5) || (I_Type == 
 assign MemWrite = (I_Type == 2);
 assign MemRead = (I_Type == 0) && (opcode == 4'h3);
 assign ALUSrc = (I_Type == 3) || (I_Type == 4) || (I_Type == 2); //1 for taking from rs2, 0 taking from immidiate
+assign MemToReg = (I_Type == 0);
 
 
 //ALU depends on the instruction type, so will need lots of logic for this

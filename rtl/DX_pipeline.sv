@@ -14,7 +14,7 @@ module DX_pipeline #(
     input [3:0] rd_i,rs1_i,rs2_i,//used in forwarding
 
 //the entire control unit passes thru
-    input RegWrite_i, MemWrite_i, MemRead_i, ALUSrc_i,
+    input RegWrite_i, MemWrite_i, MemRead_i, ALUSrc_i, MemToReg_i,
     input [2:0] ALUOp_i,
 
 
@@ -22,7 +22,7 @@ module DX_pipeline #(
     output logic [63:0] PC_o,
     output  logic [31:0] readData1_o, readData2_o,
     output [3:0] rd_o,rs1_o,rs2_o,//used in forwarding
-    output RegWrite_o, MemWrite_o, MemRead_o, ALUSrc_o,
+    output RegWrite_o, MemWrite_o, MemRead_o, ALUSrc_o, MemToReg_o,
     output [2:0] ALUOp_o,
 
 
@@ -44,6 +44,7 @@ logic [3:0] rd_d, rd_q, rs1_d, rs1_q, rs2_d, rs2_q;
 logic RegWrite_d, RegWrite_q;
 logic MemWrite_d, MemWrite_q;
 logic MemRead_d, MemRead_q;
+logic MemToReg_d, MemToReg_q;
 logic ALUSrc_d, ALUSrc_q;
 logic [2:0] ALUOp_d, ALUOp_q;
 
@@ -64,6 +65,7 @@ always_comb begin
     RegWrite_d = RegWrite_q;
     MemWrite_d = MemWrite_q;
     MemRead_d = MemRead_q;
+    MemToReg_d = MemToReg_q;
     ALUSrc_d = ALUSrc_q;
     ALUOp_d = ALUOp_q;
 
@@ -81,6 +83,7 @@ always_comb begin
                     RegWrite_d = RegWrite_i;
                     MemWrite_d = MemWrite_i;
                     MemRead_d = MemRead_i;
+                    MemToReg_d = MemToReg_i;
                     ALUSrc_d = ALUSrc_i;
                     ALUOp_d = ALUOp_i;
 
@@ -98,6 +101,7 @@ always_comb begin
                     RegWrite_d = RegWrite_i;
                     MemWrite_d = MemWrite_i;
                     MemRead_d = MemRead_i;
+                    MemToReg_d = MemToReg_i;
                     ALUSrc_d = ALUSrc_i;
                     ALUOp_d = ALUOp_i;
 
@@ -125,6 +129,7 @@ always_comb begin
                     RegWrite_d = RegWrite_i;
                     MemWrite_d = MemWrite_i;
                     MemRead_d = MemRead_i;
+                    MemToReg_d = MemToReg_i;
                     ALUSrc_d = ALUSrc_i;
                     ALUOp_d = ALUOp_i;
 
@@ -149,6 +154,7 @@ always_ff @(posedge clk_i) begin
             RegWrite_q <= 0;
             MemWrite_q <= 0;
             MemRead_q <= 0;
+            MemToReg_q <= 0;
             ALUSrc_q <= 0;
             ALUOp_q <= '0;
 
@@ -167,6 +173,7 @@ always_ff @(posedge clk_i) begin
         RegWrite_q <= RegWrite_d;
         MemWrite_q <= MemWrite_d;
         MemRead_q <= MemRead_d;
+        MemToReg_q <= MemToReg_d;
         ALUSrc_q <= ALUSrc_d;
         ALUOp_q <= ALUOp_d;
     end
@@ -182,6 +189,7 @@ assign rs2_o = rs2_q;
 assign RegWrite_o = RegWrite_q;
 assign MemWrite_o = MemWrite_q;
 assign MemRead_o = MemRead_q;
+assign MemToReg_o = MemToReg_q;
 assign ALUSrc_o = ALUSrc_q;
 assign ALUOp_o = ALUOp_q;
 

@@ -12,12 +12,12 @@ module MW_pipeline #(
     input [31:0] mem_data_i,
     input [3:0] rd_i,//used in forwarding
     input [31:0] mem_address_i,
-    input RegWrite_i,
+    input RegWrite_i, MemToReg_i,
 
     output [31:0] mem_data_o,
     output [31:0] mem_address_o,
     output [3:0] rd_o,//used in forwarding
-    output RegWrite_o,
+    output RegWrite_o, MemToReg_o,
 
 
 
@@ -35,6 +35,7 @@ logic [31:0] mem_data_d, mem_data_q;
 logic [3:0]  rd_d, rd_q;
 logic [31:0] mem_address_d, mem_address_q;
 logic        RegWrite_d, RegWrite_q;
+logic        MemToReg_d, MemToReg_q;
 
 
 always_comb begin
@@ -47,6 +48,7 @@ always_comb begin
     rd_d = rd_q;
     mem_address_d = mem_address_q;
     RegWrite_d = RegWrite_q;
+    MemToReg_d = MemToReg_q;
 
     case (state_q)
         EMPTY: begin
@@ -56,6 +58,7 @@ always_comb begin
                     rd_d = rd_i;
                     mem_address_d = mem_address_i;
                     RegWrite_d = RegWrite_i;
+                    MemToReg_d = MemToReg_i;
 
                     state_d = FULL;
                 end
@@ -65,6 +68,7 @@ always_comb begin
                     rd_d = rd_i;
                     mem_address_d = mem_address_i;
                     RegWrite_d = RegWrite_i;
+                    MemToReg_d = MemToReg_i;
 
                     if(valid_i) begin
                         state_d = FULL;
@@ -84,6 +88,7 @@ always_comb begin
                     rd_d = rd_i;
                     mem_address_d = mem_address_i;
                     RegWrite_d = RegWrite_i;
+                    MemToReg_d = MemToReg_i;
 
                     state_d = FULL;
                 end
@@ -100,6 +105,7 @@ always_ff @(posedge clk_i) begin
             rd_q <= '0;
             mem_address_q <= '0;
             RegWrite_q <= 0;
+            MemToReg_q <= 0;
         end
     state_q <= EMPTY;
 end else begin
@@ -108,6 +114,7 @@ end else begin
     rd_q <= rd_d;
     mem_address_q <= mem_address_d;
     RegWrite_q <= RegWrite_d;
+    MemToReg_q <= MemToReg_d;
 end
 end
 
@@ -115,5 +122,6 @@ assign mem_data_o = mem_data_q;
 assign rd_o = rd_q;
 assign mem_address_o = mem_address_q;
 assign RegWrite_o = RegWrite_q;
+assign MemToReg_o = MemToReg_q;
 
 endmodule
