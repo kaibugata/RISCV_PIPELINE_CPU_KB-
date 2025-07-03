@@ -11,19 +11,23 @@ module DX_pipeline #(
     input  logic [31:0] readData1_i, readData2_i,
     input logic [63:0] immediate_i
     input logic [63:0] PC_i,
-    input [3:0] rd_i,rs1_i,rs2_i,//used in forwarding
+    input logic [3:0] rd_i,rs1_i,rs2_i,//used in forwarding
 
 //the entire control unit passes thru
-    input RegWrite_i, MemWrite_i, MemRead_i, ALUSrc_i, MemToReg_i,
-    input [2:0] ALUOp_i,
+    input logic RegWrite_i, MemWrite_i, MemRead_i, ALUSrc_i, MemToReg_i,
+    input logic [2:0] ALUOp_i,
+    input logic [2:0] funct3_i,
+    input logic [$clog2(6)-1:0] I_Type_i,
 
 
     output logic [63:0] immediate_o,
     output logic [63:0] PC_o,
-    output  logic [31:0] readData1_o, readData2_o,
-    output [3:0] rd_o,rs1_o,rs2_o,//used in forwarding
-    output RegWrite_o, MemWrite_o, MemRead_o, ALUSrc_o, MemToReg_o,
-    output [2:0] ALUOp_o,
+    output logic [31:0] readData1_o, readData2_o,
+    output logic [3:0] rd_o,rs1_o,rs2_o,//used in forwarding
+    output logic RegWrite_o, MemWrite_o, MemRead_o, ALUSrc_o, MemToReg_o,
+    output logic [2:0] ALUOp_o,
+    output logic [2:0] funct3_o,
+    output logic [$clog2(6)-1:0] I_Type_o,
 
 
     input  logic                 valid_i,//the input we put is valid and we are ready to start
@@ -47,6 +51,9 @@ logic MemRead_d, MemRead_q;
 logic MemToReg_d, MemToReg_q;
 logic ALUSrc_d, ALUSrc_q;
 logic [2:0] ALUOp_d, ALUOp_q;
+logic [$clog2(6)-1:0] I_Type_d, I_Type_q;
+logic [2:0] funct3_d, funct3_q;
+
 
 
 always_comb begin
@@ -68,6 +75,8 @@ always_comb begin
     MemToReg_d = MemToReg_q;
     ALUSrc_d = ALUSrc_q;
     ALUOp_d = ALUOp_q;
+    funct3_d = funct3_q;
+    I_Type_d = I_Type_q;
 
     case (state_q)
         EMPTY: begin
@@ -86,6 +95,8 @@ always_comb begin
                     MemToReg_d = MemToReg_i;
                     ALUSrc_d = ALUSrc_i;
                     ALUOp_d = ALUOp_i;
+                    funct3_d = funct3_i;
+                    I_Type_d = I_Type_i;
 
                     state_d = FULL;
                 end
@@ -104,6 +115,8 @@ always_comb begin
                     MemToReg_d = MemToReg_i;
                     ALUSrc_d = ALUSrc_i;
                     ALUOp_d = ALUOp_i;
+                    funct3_d = funct3_i;
+                    I_Type_d = I_Type_i;
 
                     if(valid_i) begin
                         state_d = FULL;
@@ -132,6 +145,8 @@ always_comb begin
                     MemToReg_d = MemToReg_i;
                     ALUSrc_d = ALUSrc_i;
                     ALUOp_d = ALUOp_i;
+                    funct3_d = funct3_i;
+                    I_Type_d = I_Type_i;
 
                     state_d = FULL;
                 end
@@ -157,6 +172,8 @@ always_ff @(posedge clk_i) begin
             MemToReg_q <= 0;
             ALUSrc_q <= 0;
             ALUOp_q <= '0;
+            funct3_q <= '0;
+            I_Type_q <= '0;
 
         end
         state_q <= EMPTY;
@@ -176,6 +193,9 @@ always_ff @(posedge clk_i) begin
         MemToReg_q <= MemToReg_d;
         ALUSrc_q <= ALUSrc_d;
         ALUOp_q <= ALUOp_d;
+        funct3_q <= funct3_d;
+        I_Type_q <= I_Type_d;
+
     end
 end
 
@@ -192,6 +212,8 @@ assign MemRead_o = MemRead_q;
 assign MemToReg_o = MemToReg_q;
 assign ALUSrc_o = ALUSrc_q;
 assign ALUOp_o = ALUOp_q;
+assign funct3_o = funct3_q;
+assign I_Type_o = I_Type_q;
 
 
 

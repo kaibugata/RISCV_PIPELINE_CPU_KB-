@@ -9,7 +9,7 @@ wire [63:0] PCMuxOut;
 two_1Mux64 PCinMux
 (.a(PC_plus4),//pc + 4
 .b(BranchALUXpipe_out),//pc + branch offset
-.sel(),//branch taken logic
+.sel(branchtaken),//branch taken logic
 .out(PCMuxOut));
 
 wire PC_w;
@@ -102,6 +102,8 @@ wire [31:0] rs1DPipe_out, rs2DPipe_out;
 wire [3:0] rd_adrOut,rs1_adrOut,rs2_adrOut,
 wire RegWrite_Dpipe, MemRead_Dpipe, MemWrite_Dpipe, ALUSrc_Dpipe, MemToReg_Dpipe;
 wire [2:0] ALUOp_Dpipe;
+wire [$clog2(6)-1:0] I_Type_Dpipe;
+wire [2:0] funct3_Dpipe;
 DX_pipeline DX_pipe
 (.clk_i,
  .reset_i,
@@ -119,6 +121,8 @@ DX_pipeline DX_pipe
  .MemToReg_i(MemToReg),
  .ALUSrc_i(ALUSrc),
  .ALUOp_i(ALUOp),
+ .funct3_i(funct3),
+ .I_Type_i(I_Type),
  .immediate_o(immediateDPipe_out),
  .PC_o(PCDPipe_out),
  .readData1_o(rs1DPipe_out),
@@ -132,6 +136,8 @@ DX_pipeline DX_pipe
  .MemToReg_o(MemToReg_Dpipe),
  .ALUSrc_o(ALUSrc_Dpipe),
  .ALUOp_o(ALUOp_Dpipe),
+ .funct3_o(funct3_Dpipe),
+ .I_Type_o(I_Type_Dpipe),
  .valid_i(),
  .ready_o(),
  .valid_o(),
@@ -155,26 +161,32 @@ wire [63:0] rs2ImmediateMuxOut;
 
 
 wire zeroSignal;
+wire ltzSignal;
 wire [63:0] ALUresultOut;
 mainALU mainALU
 (.op1(rs1DPipe_out),
 .op2(rs2ImmediateMuxOut),
 .operand(ALUOp_Dpipe),
 .out(ALUresultOut),
-.zero(zeroSignal));
+.zero(zeroSignal),
+.ltz(ltzSignal));
 
 
 wire [63:0] BranchALUXpipe_out;
 wire [63:0] ALU_resultXpipe;
 wire RegWrite_Xpipe, MemRead_Xpipe, MemWrite_Xpipe, MemToReg_Xpipe;
 wire zero_xpipe;
+wire ltz_xpipe;
 wire [3:0] rd_xpipeout;
 wire [31:0] rs2XPipe_out;
+wire [$clog2(6)-1:0] I_Type_Xpipe;
+wire [2:0] funct3_Xpipe;
 XM_pipeleine XM_pipe
 (.clk_i,
 .reset_i,
 .pipeline_flush(),
 .zero_i(zeroSignal),
+.ltz_i(ltzSignal),
 .BranchPC_i(BranchALU_out),
 .result_i(ALUresultOut),
 .MuxRes_i(rs2DPipe_out),//rs2 (could be changed when forwarding implemented)
@@ -183,7 +195,10 @@ XM_pipeleine XM_pipe
 .MemWrite_i(MemWrite_Dpipe),
 .MemRead_i(MemRead_Dpipe),
 .MemToReg_i(MemToReg_Dpipe),
+.funct3_i(funct3_Dpipe),
+.I_Type_i(I_Type_Dpipe),
 .zero_o(zero_xpipe),
+.ltz_o(ltz_xpipe),
 .BranchPC_o(BranchALUXpipe_out),
 .result_o(ALU_resultXpipe),
 .MuxRes_o(rs2XPipe_out),
@@ -192,10 +207,21 @@ XM_pipeleine XM_pipe
 .MemWrite_o(MemWrite_Xpipe),
 .MemRead_o(MemRead_Xpipe),
 .MemToReg_o(MemToReg_Xpipe),
+.funct3_o(funct3_Xpipe),
+.I_Type_o(I_Type_Xpipe),
 .valid_i(),
 .ready_o(),
 .valid_o(),
 .ready_i());
+
+wire branchtaken;
+Branch branchMod
+(.zero(zero_xpipe),
+.ltz(ltz_xpipe), //less than zero
+.funct3(funct3_Xpipe),
+.I_Type(I_Type_Xpipe),
+.branchtaken(branchtaken));
+
 
 wire [31:0] mem_data_o
 mem_Rsync DataMemory

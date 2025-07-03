@@ -12,16 +12,24 @@ module XM_pipeline #(
     input logic [63:0] BranchPC_i,
     input logic [63:0] result_i,
     input logic [31:0] MuxRes_i,//figure out
-    input [3:0] rd_i,//used in forwarding
-    input RegWrite_i, MemWrite_i, MemRead_i, MemToReg_i,//the entire control unit passes thru
+    input logic [3:0] rd_i,//used in forwarding
+    input logic RegWrite_i, MemWrite_i, MemRead_i, MemToReg_i,//the entire control unit passes thru
+    input logic [2:0] funct3_i,
+    input logic [$clog2(6)-1:0] I_Type_i,
+    input logic ltz_i,
+
 
 
     output logic zero_o,
+    output logic ltz_o,
     output logic [63:0] BranchPC_o,
     output logic [63:0] result_o,
     output logic [31:0] MuxRes_o,
-    output [3:0] rd_o,//used in forwarding
-    output RegWrite_o, MemWrite_o, MemRead_o, MemToReg_o,
+    output logic [3:0] rd_o,//used in forwarding
+    output logic RegWrite_o, MemWrite_o, MemRead_o, MemToReg_o,
+    output logic [2:0] funct3_o,
+    output logic [$clog2(6)-1:0] I_Type_i,
+
 
 
 
@@ -45,6 +53,10 @@ logic RegWrite_d, RegWrite_q;
 logic MemWrite_d, MemWrite_q;
 logic MemRead_d, MemRead_q;
 logic MemToReg_d, MemToReg_q;
+logic [$clog2(6)-1:0] I_Type_d, I_Type_q;
+logic [2:0] funct3_d, funct3_q;
+logic ltz_d, ltz_q;
+
 
 
 always_comb begin
@@ -62,6 +74,10 @@ always_comb begin
     MemWrite_d = MemWrite_q;
     MemRead_d = MemRead_q;
     MemToReg_d = MemToReg_q;
+    funct3_d = funct3_q;
+    I_Type_d = I_Type_q;
+    ltz_d = ltz_q;
+
 
     case (state_q)
         EMPTY: begin
@@ -76,6 +92,10 @@ always_comb begin
                     MemWrite_d = MemWrite_i;
                     MemRead_d = MemRead_i;
                     MemToReg_d = MemToReg_i;
+                    funct3_d = funct3_i;
+                    I_Type_d = I_Type_i;
+                    ltz_d = ltz_i;
+
 
                     state_d = FULL;
                 end
@@ -90,6 +110,10 @@ always_comb begin
                     MemWrite_d = MemWrite_i;
                     MemRead_d = MemRead_i;
                     MemToReg_d = MemToReg_i;
+                    funct3_d = funct3_i;
+                    I_Type_d = I_Type_i;
+                    ltz_d = ltz_i;
+
 
                     if(valid_i) begin
                         state_d = FULL;
@@ -114,6 +138,10 @@ always_comb begin
                     MemWrite_d = MemWrite_i;
                     MemRead_d = MemRead_i;
                     MemToReg_d = MemToReg_i;
+                    funct3_d = funct3_i;
+                    I_Type_d = I_Type_i;
+                    ltz_d = ltz_i;
+
 
                     state_d = FULL;
                 end
@@ -135,6 +163,9 @@ always_ff @(posedge clk_i) begin
             MemWrite_q <= 0;
             MemRead_q <= 0;
             MemToReg_q <= 0;
+            funct3_q <= '0;
+            I_Type_q <= '0;
+            ltz_q <= '0;
         end
         state_q <= EMPTY;
 
@@ -149,6 +180,9 @@ always_ff @(posedge clk_i) begin
         MemWrite_q <= MemWrite_d;
         MemRead_q <= MemRead_d;
         MemToReg_q <= MemToReg_d;
+        funct3_q <= funct3_d;
+        I_Type_q <= I_Type_d;
+        ltz_q <= ltz_d;
     end
 end
 
@@ -161,6 +195,9 @@ assign RegWrite_o = RegWrite_q;
 assign MemWrite_o = MemWrite_q;
 assign MemRead_o = MemRead_q;
 assign MemToReg_o = MemToReg_q;
+assign funct3_o = funct3_q;
+assign I_Type_o = I_Type_q;
+assign ltz_o = ltz_q;
 
 
 endmodule

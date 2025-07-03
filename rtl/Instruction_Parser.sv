@@ -5,8 +5,7 @@ module Instruction_Parser (
     output [6:0] opcode,
     output [6:0] funct7,
     output [$clog2(6)-1:0] I_Type
-
-)
+);
 
 
 //Should I output rs1,rs2,rd, opcode from this to use in a different module later in the processor
