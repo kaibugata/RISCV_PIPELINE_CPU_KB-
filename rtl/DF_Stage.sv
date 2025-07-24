@@ -89,7 +89,7 @@ module DF_Stage(
     FD_pipeline FDPipe
     (.clk_i,
     .reset_i,
-    .pipeline_flush(1'b0),
+    .pipeline_flush(branchTaken),//set as branchtaken as a test
     .instruction_i(instmemFout),
     .PC_i(PC_o),
     .valid_i(|(instmemFout ^ InstructionFPipe_out)),
@@ -145,7 +145,7 @@ module DF_Stage(
     DX_pipeline DXPipe 
     (.clk_i(clk_i),
     .reset_i(reset_i),
-    .pipeline_flush(),
+    .pipeline_flush(branchTaken),
     .readData1_i(rs1Out),
     .readData2_i(rs2Out),
     .immediate_i(immediate64bit),
@@ -234,7 +234,7 @@ module DF_Stage(
     XM_pipeline XMpipe 
     (.clk_i(clk_i),
     .reset_i(reset_i),
-    .pipeline_flush(),
+    .pipeline_flush(branchTaken),
     .zero_i(zeroSignal),
     .BranchPC_i(BranchALU_out),
     .result_i(ALUresultOut),

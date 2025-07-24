@@ -77,10 +77,19 @@ always_ff @(posedge clk_i) begin
         end
         state_q <= EMPTY;
 
+    end else
+    if(pipeline_flush) begin
+        instruction_q <= 32'b00000000000000000000000000010011;
+        PC_q <= '0;
     end else begin
+    
+    
+    
         state_q <= state_d;
         PC_q <= PC_d;
         instruction_q <= instruction_d;
+        
+        
     end
 end
 

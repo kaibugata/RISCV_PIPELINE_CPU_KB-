@@ -178,6 +178,22 @@ always_ff @(posedge clk_i) begin
         end
         state_q <= EMPTY;
 
+    end else if(pipeline_flush) begin
+        readData1_q <= '0;
+        readData2_q <= '0;
+        immediate_q <= '0;
+        rd_q <= '0;
+        rs1_q <= '0;
+        rs2_q <= '0;
+        RegWrite_q <= 0;
+        MemWrite_q <= 0;
+        MemRead_q <= 0;
+        MemToReg_q <= 0;
+        ALUSrc_q <= 0;
+        ALUOp_q <= '0;
+        funct3_q <= '0;
+        I_Type_q <= '0;
+        PC_q <= '0;
     end else begin
         state_q <= state_d;
         PC_q <= PC_d;

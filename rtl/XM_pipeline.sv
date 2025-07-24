@@ -169,6 +169,20 @@ always_ff @(posedge clk_i) begin
         end
         state_q <= EMPTY;
 
+    end else if(pipeline_flush) begin
+        zero_q <= '0;
+        BranchPC_q <= '0;
+        result_q <= '0;
+        MuxRes_q <= '0;
+        rd_q <= '0;
+        ltz_q <= '0;
+        RegWrite_q <= 0;
+        MemWrite_q <= 0;
+        MemRead_q <= 0;
+        MemToReg_q <= 0;
+        funct3_q <= '0;
+        I_Type_q <= '0;
+        
     end else begin
         state_q <= state_d;
         zero_q <= zero_d;
