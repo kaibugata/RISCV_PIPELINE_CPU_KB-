@@ -38,7 +38,7 @@ module ExecuteStage(
     input logic [63:0] MemAddr,
     
     output logic [63:0] BranchALU_out,
-    output logic [63:0] rs2ImmediateMuxOut,
+    output logic [63:0] rs23muxOut,
     output logic zeroSignal,
     output logic ltzSignal,
     output logic [63:0] ALUresultOut,
@@ -57,7 +57,7 @@ BranchALU BranchALU
 .ALU_out(BranchALU_out));
 
 //POTENTIAL FOR FORWARDING PATHS HERE
-logic [63:0] rs13muxOut, rs23muxOut;
+logic [63:0] rs13muxOut;
 three_1Mux64 rs1FrwdMux
 (.a({{32{rs1Out[31]}}, rs1Out}),
 .b(WBdata),
@@ -72,7 +72,7 @@ three_1Mux64 rs2FrwdMux
 .sel(forwardB),
 .out(rs23muxOut));
 
-//wire [63:0] rs2ImmediateMuxOut;
+logic [63:0] rs2ImmediateMuxOut;
 two_1Mux64 rs2Mux
 (.a(immediate64bit),//immediate
 .b(rs23muxOut),//rs2  

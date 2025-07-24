@@ -50,7 +50,7 @@ module DF_Stage(
     //----------------------------------------------
     //X stage outputs
     logic [63:0] BranchALU_out;
-    logic [63:0] rs2ImmediateMuxOut;
+    logic [63:0] rs23muxOut;
     logic zeroSignal;
     logic ltzSignal;
     logic [63:0] ALUresultOut;
@@ -213,7 +213,7 @@ module DF_Stage(
     .WBdata({{32{WBMuxOut[31]}}, WBMuxOut}),
     .MemAddr(ALUResult_oM),
     .BranchALU_out(BranchALU_out),
-    .rs2ImmediateMuxOut(rs2ImmediateMuxOut),
+    .rs23muxOut(rs23muxOut),
     .zeroSignal(zeroSignal),
     .ltzSignal(ltzSignal),
     .ALUresultOut(ALUresultOut),
@@ -238,7 +238,7 @@ module DF_Stage(
     .zero_i(zeroSignal),
     .BranchPC_i(BranchALU_out),
     .result_i(ALUresultOut),
-    .MuxRes_i({{59{rs2_oX[4]}}, rs2_oX}),//was rs2ImmediateMuxOut
+    .MuxRes_i(rs23muxOut),//was rs2ImmediateMuxOut
     .rd_i(rd_oX),
     .RegWrite_i(RegWrite_oX),
     .MemWrite_i(MemWrite_oX),
