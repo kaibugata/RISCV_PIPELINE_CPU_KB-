@@ -3,6 +3,7 @@ module ProgCount #(
 )(
     input logic clk_i,
     input logic reset_i,
+    input logic ready_i,
     input logic [63:0] PC_i,
     output logic [63:0] PC_o
 );
@@ -15,7 +16,12 @@ always_ff @(posedge clk_i) begin
 if(reset_i) begin
 PC_o <= '0;
 end else begin
+if(ready_i)begin
 PC_o <= PC_i;
+end
 end
 
 end
+
+
+endmodule

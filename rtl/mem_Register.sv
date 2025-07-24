@@ -1,6 +1,6 @@
 module mem_Register #(
     parameter int DataWidth = 32,
-    parameter int NumEntries = 31,
+    parameter int NumEntries = 31
     //parameter string ReadmembFilename = "memory_init_file.memb" //cannot use with digitaljs
 ) (
     input  logic clk_i,
@@ -37,6 +37,8 @@ module mem_Register #(
     initial begin
         // Display depth and width (You will need to match these in your init file)
         $display("%m: NumEntries is %d, DataWidth is %d", NumEntries, DataWidth);
+        $readmemh("register_memory_init_file.memh", mem);
+        
         // logic [bar:0] foo [baz];
         // In order to get the memory contents in icarus you need to run this for loop during initialization:
         for (int i = 0; i < NumEntries; i++) begin
@@ -46,7 +48,7 @@ module mem_Register #(
 
 
 
-always_ff @(posedge clk_i) begin
+always_ff @(negedge clk_i) begin //READ ON NEGEDGE
     if(reset_i) begin
         //maybe add reset logic
 
@@ -60,12 +62,38 @@ always_ff @(posedge clk_i) begin
         if(rs2_valid_i) begin
             rs2_data_o <= mem[rs2_addr_i];
         end
+    end
+end
 
+always_ff @(posedge clk_i) begin
+    if(reset_i) begin
+        //maybe add reset logic
+
+
+    end else begin
         if(wr_valid_i) begin
             mem[wr_addr_i] <= wr_data_i;
         end
     end
 end
+
+
+//always_comb begin
+
+//    if(rs1_valid_i) begin
+//            rs1_data_o = mem[rs1_addr_i];
+//        end
+
+//        if(rs2_valid_i) begin
+//            rs2_data_o = mem[rs2_addr_i];
+//        end
+
+//        if(wr_valid_i) begin
+//            mem[wr_addr_i] = wr_data_i;
+//        end
+    
+
+//end
 
 
 endmodule

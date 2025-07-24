@@ -9,9 +9,9 @@ module DX_pipeline #(
     input logic pipeline_flush,//do something with this
 
     input  logic [31:0] readData1_i, readData2_i,
-    input logic [63:0] immediate_i
+    input logic [63:0] immediate_i,
     input logic [63:0] PC_i,
-    input logic [3:0] rd_i,rs1_i,rs2_i,//used in forwarding
+    input logic [4:0] rd_i,rs1_i,rs2_i,//used in forwarding
 
 //the entire control unit passes thru
     input logic RegWrite_i, MemWrite_i, MemRead_i, ALUSrc_i, MemToReg_i,
@@ -23,7 +23,7 @@ module DX_pipeline #(
     output logic [63:0] immediate_o,
     output logic [63:0] PC_o,
     output logic [31:0] readData1_o, readData2_o,
-    output logic [3:0] rd_o,rs1_o,rs2_o,//used in forwarding
+    output logic [4:0] rd_o,rs1_o,rs2_o,//used in forwarding
     output logic RegWrite_o, MemWrite_o, MemRead_o, ALUSrc_o, MemToReg_o,
     output logic [2:0] ALUOp_o,
     output logic [2:0] funct3_o,
@@ -44,7 +44,7 @@ logic [63:0] PC_d, PC_q;
 logic [31:0] readData1_d, readData1_q;
 logic [31:0] readData2_d, readData2_q;
 logic [63:0] immediate_d, immediate_q;
-logic [3:0] rd_d, rd_q, rs1_d, rs1_q, rs2_d, rs2_q;
+logic [4:0] rd_d, rd_q, rs1_d, rs1_q, rs2_d, rs2_q;
 logic RegWrite_d, RegWrite_q;
 logic MemWrite_d, MemWrite_q;
 logic MemRead_d, MemRead_q;

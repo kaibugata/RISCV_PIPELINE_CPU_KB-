@@ -1,10 +1,10 @@
 module Instruction_Parser (
     input logic [31:0] Instruction,
-    output [3:0] rd,rs1,rs2,
-    output [2:0] funct3,
-    output [6:0] opcode,
-    output [6:0] funct7,
-    output [$clog2(6)-1:0] I_Type
+    output logic [4:0] rd,rs1,rs2, //changed to 5 bits bc im stupid
+    output logic [2:0] funct3,
+    output logic [6:0] opcode,
+    output logic [6:0] funct7,
+    output logic [$clog2(6)-1:0] I_Type
 );
 
 

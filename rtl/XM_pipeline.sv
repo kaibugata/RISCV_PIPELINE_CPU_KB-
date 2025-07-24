@@ -11,8 +11,8 @@ module XM_pipeline #(
     input logic zero_i,
     input logic [63:0] BranchPC_i,
     input logic [63:0] result_i,
-    input logic [31:0] MuxRes_i,//figure out
-    input logic [3:0] rd_i,//used in forwarding
+    input logic [63:0] MuxRes_i,//figure out
+    input logic [4:0] rd_i,//used in forwarding
     input logic RegWrite_i, MemWrite_i, MemRead_i, MemToReg_i,//the entire control unit passes thru
     input logic [2:0] funct3_i,
     input logic [$clog2(6)-1:0] I_Type_i,
@@ -24,11 +24,11 @@ module XM_pipeline #(
     output logic ltz_o,
     output logic [63:0] BranchPC_o,
     output logic [63:0] result_o,
-    output logic [31:0] MuxRes_o,
-    output logic [3:0] rd_o,//used in forwarding
+    output logic [63:0] MuxRes_o,
+    output logic [4:0] rd_o,//used in forwarding
     output logic RegWrite_o, MemWrite_o, MemRead_o, MemToReg_o,
     output logic [2:0] funct3_o,
-    output logic [$clog2(6)-1:0] I_Type_i,
+    output logic [$clog2(6)-1:0] I_Type_o,
 
 
 
@@ -46,8 +46,8 @@ state_t state_d,state_q;
 logic zero_d, zero_q;
 logic [63:0] BranchPC_d, BranchPC_q;
 logic [63:0] result_d, result_q;
-logic [31:0] MuxRes_d, MuxRes_q; // <- Define ??? appropriately
-logic [3:0] rd_d, rd_q;
+logic [63:0] MuxRes_d, MuxRes_q; // <- Define ??? appropriately
+logic [4:0] rd_d, rd_q;
 
 logic RegWrite_d, RegWrite_q;
 logic MemWrite_d, MemWrite_q;
@@ -172,7 +172,7 @@ always_ff @(posedge clk_i) begin
     end else begin
         state_q <= state_d;
         zero_q <= zero_d;
-        BranchPC_q <= PC_d;
+        BranchPC_q <= BranchPC_d;
         result_q <= result_d;
         MuxRes_q <= MuxRes_d;
         rd_q <= rd_d;
@@ -187,7 +187,7 @@ always_ff @(posedge clk_i) begin
 end
 
 assign zero_o = zero_q;
-assign BranchPC_o = PC_q;
+assign BranchPC_o = BranchPC_q;
 assign result_o = result_q;
 assign MuxRes_o = MuxRes_q;
 assign rd_o = rd_q;

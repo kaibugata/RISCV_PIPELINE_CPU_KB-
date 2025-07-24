@@ -37,13 +37,17 @@ always_ff @(posedge clk_i) begin
         //     mem[i] <= '0;
         // end
     end else begin
-        if(rd_valid_i) begin
-            rd_data_o <= mem[rd_addr_i];
-        end
         if(wr_valid_i) begin
             mem[wr_addr_i] <= wr_data_i;
         end
     end
+end
+
+
+always_ff @(negedge clk_i) begin
+        if(rd_valid_i) begin
+            rd_data_o <= mem[rd_addr_i];
+        end
 end
 
 

@@ -10,13 +10,13 @@ module MW_pipeline #(
 
 
     input [31:0] mem_data_i,
-    input [3:0] rd_i,//used in forwarding
+    input [4:0] rd_i,//used in forwarding
     input [31:0] mem_address_i,
     input RegWrite_i, MemToReg_i,
 
     output [31:0] mem_data_o,
     output [31:0] mem_address_o,
-    output [3:0] rd_o,//used in forwarding
+    output [4:0] rd_o,//used in forwarding
     output RegWrite_o, MemToReg_o,
 
 
@@ -32,7 +32,7 @@ typedef enum logic {EMPTY,FULL} state_t;
 
 state_t state_d,state_q;
 logic [31:0] mem_data_d, mem_data_q;
-logic [3:0]  rd_d, rd_q;
+logic [4:0]  rd_d, rd_q;
 logic [31:0] mem_address_d, mem_address_q;
 logic        RegWrite_d, RegWrite_q;
 logic        MemToReg_d, MemToReg_q;

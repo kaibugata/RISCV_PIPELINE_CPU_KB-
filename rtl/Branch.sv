@@ -1,9 +1,9 @@
 module Branch(
-    input zero,
-    input ltz, //less than zero
-    input [2:0] funct3,
-    input [$clog2(6)-1:0] I_Type,
-    output branchtaken);
+    input logic zero,
+    input logic ltz, //less than zero
+    input logic [2:0] funct3,
+    input logic [$clog2(6)-1:0] I_Type,
+    output logic  branchtaken);
 
     always_comb begin
         if (I_Type == 4) begin
@@ -14,6 +14,8 @@ module Branch(
             3'b101: branchtaken = zero | ~ltz;
             default: branchtaken = 1'b0;
             endcase
+        end else begin
+            branchtaken = 1'b0;
         end
     end
 

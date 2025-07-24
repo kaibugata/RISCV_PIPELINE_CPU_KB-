@@ -1,9 +1,10 @@
 module RISC_CPU (
     input clk_i,
-    input reset_i,
+    input reset_i
 );
 
-
+wire [63:0] BranchALUXpipe_out;
+wire branchtaken;
 wire [63:0] PC_plus4;
 wire [63:0] PCMuxOut;
 two_1Mux64 PCinMux
@@ -12,7 +13,7 @@ two_1Mux64 PCinMux
 .sel(branchtaken),//branch taken logic
 .out(PCMuxOut));
 
-wire PC_w;
+wire [63:0] PC_w;
 ProgCount Program_Counter
 (.clk_i,
 .reset_i,
@@ -47,11 +48,11 @@ FD_pipeline FDPipe
 .instruction_o(InstructionFPipe_out),
 .PC_o(PCFPipe_out));
 
-wire [3:0] rd,rs1,rs2,
-wire [2:0] funct3,
-wire [6:0] opcode,
-wire [6:0] funct7,
-wire [$clog2(6)-1:0] I_Type
+wire [3:0] rd,rs1,rs2;
+wire [2:0] funct3;
+wire [6:0] opcode;
+wire [6:0] funct7;
+wire [$clog2(6)-1:0] I_Type;
 Instruction_Parser Instruction_Parser
 (.Instruction(InstructionPFipe_out),
 .rd(rd),
@@ -68,6 +69,7 @@ immediateParser immediateParser
 .I_Type(I_Type),
 .constant(immediate64bit));
 
+wire [3:0] rd_mpipe_out;
 wire [31:0] rs1Out, rs2Out;
 mem_Register Registers
 (.clk_i,
@@ -99,7 +101,7 @@ Control CtrlUnit
 wire [63:0] PCDPipe_out;
 wire [63:0] immediateDPipe_out;
 wire [31:0] rs1DPipe_out, rs2DPipe_out;
-wire [3:0] rd_adrOut,rs1_adrOut,rs2_adrOut,
+wire [3:0] rd_adrOut,rs1_adrOut,rs2_adrOut;
 wire RegWrite_Dpipe, MemRead_Dpipe, MemWrite_Dpipe, ALUSrc_Dpipe, MemToReg_Dpipe;
 wire [2:0] ALUOp_Dpipe;
 wire [$clog2(6)-1:0] I_Type_Dpipe;
@@ -151,9 +153,8 @@ BranchALU BranchALU
 
 //POTENTIAL FOR FORWARDING PATHS HERE
 
-
-two_1Mux64 rs2Mux
 wire [63:0] rs2ImmediateMuxOut;
+two_1Mux64 rs2Mux
 (.a(immediateDPipe_out),//immediate
 .b(rs2DPipe_out),//rs2
 .sel(ALUSrc_Dpipe),
@@ -172,7 +173,7 @@ mainALU mainALU
 .ltz(ltzSignal));
 
 
-wire [63:0] BranchALUXpipe_out;
+
 wire [63:0] ALU_resultXpipe;
 wire RegWrite_Xpipe, MemRead_Xpipe, MemWrite_Xpipe, MemToReg_Xpipe;
 wire zero_xpipe;
@@ -181,7 +182,7 @@ wire [3:0] rd_xpipeout;
 wire [31:0] rs2XPipe_out;
 wire [$clog2(6)-1:0] I_Type_Xpipe;
 wire [2:0] funct3_Xpipe;
-XM_pipeleine XM_pipe
+XM_pipeline XM_pipe
 (.clk_i,
 .reset_i,
 .pipeline_flush(),
@@ -214,7 +215,7 @@ XM_pipeleine XM_pipe
 .valid_o(),
 .ready_i());
 
-wire branchtaken;
+
 Branch branchMod
 (.zero(zero_xpipe),
 .ltz(ltz_xpipe), //less than zero
@@ -223,7 +224,7 @@ Branch branchMod
 .branchtaken(branchtaken));
 
 
-wire [31:0] mem_data_o
+wire [31:0] mem_data_o;
 mem_Rsync DataMemory
 (.clk_i,
 .reset_i,
@@ -236,7 +237,6 @@ mem_Rsync DataMemory
 
 wire [31:0] mem_dataM_pipe;
 wire [31:0] mem_adrM_pipe;
-wire [3:0] rd_mpipe_out;
 wire RegWrite_Mpipe, MemToReg_Mpipe;
 MW_pipeline MW_pipe
 (.clk_i,

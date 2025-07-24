@@ -1,19 +1,19 @@
 module Control (
-    input [2:0] funct3,
-    input [6:0] opcode,
-    input [6:0] funct7,
-    input [$clog2(6)-1:0] I_Type,
-    output RegWrite, MemWrite, MemRead, ALUSrc, MemToReg,
-    output [2:0] ALUOp
+    input logic [2:0] funct3,
+    input logic [6:0] opcode,
+    input logic [6:0] funct7,
+    input logic [$clog2(6)-1:0] I_Type,
+    output logic RegWrite, MemWrite, MemRead, ALUSrc, MemToReg,
+    output logic [2:0] ALUOp
 
 );
 
 
 assign RegWrite = (I_Type == 3) || (I_Type == 0) || (I_Type == 5) || (I_Type == 1);
 assign MemWrite = (I_Type == 2);
-assign MemRead = (I_Type == 0) && (opcode == 4'h3);
-assign ALUSrc = (I_Type == 3) || (I_Type == 4) || (I_Type == 2); //1 for taking from rs2, 0 taking from immidiate
-assign MemToReg = (I_Type == 0);
+assign MemRead = (I_Type == 0) && (opcode == 7'h3);
+assign ALUSrc = (I_Type == 3) || (I_Type == 4); //1 for taking from rs2, 0 taking from immidiate
+assign MemToReg = (I_Type == 0) && (opcode == 7'h3);
 
 
 //ALU depends on the instruction type, so will need lots of logic for this
@@ -27,6 +27,7 @@ assign MemToReg = (I_Type == 0);
 //110 = SR
 
 always_comb begin : aluOP
+        ALUOp = 3'b000;//default
     if((opcode == 7'h3)||(opcode == 7'h13 && funct3 == 3'b0)||(opcode == 7'h17)||(opcode == 7'h23)||(opcode == 7'h33 && funct7 == 7'b0)||(opcode == 7'h37)||(opcode == 7'h6F)||(opcode == 7'h67)) begin
         ALUOp = 3'b000;//ADD
     end else if((opcode == 7'h33 && funct7 == 7'b0100000)||(opcode == 7'h63)||(opcode == 7'h33 && (funct3 == 3'b010 || funct3 == 3'b011))||(opcode == 7'h13 && (funct3 == 3'b010 || funct3 == 3'b011)))begin

@@ -1,10 +1,10 @@
 module mainALU(
-    input [63:0] op1,
-    input [63:0] op2,
-    input [3:0] operand,
-    output [63:0] out,
-    output zero,
-    output ltz);
+    input logic [63:0] op1,
+    input logic [63:0] op2,
+    input logic [2:0] operand,
+    output logic [63:0] out,
+    output logic zero,
+    output logic ltz);
 
 
 always_comb begin
