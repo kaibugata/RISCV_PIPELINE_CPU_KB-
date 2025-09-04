@@ -25,7 +25,7 @@ The file RISC_CPU.sv is our TOP for the project and contains the main CPU
 The file FullPipelineTB1.sv is our main testbench that we used to test the entire pipeline
 
 
-## Pipeline Diagram
+## Pipeline Diagram(pipeline.png)
 
 This image below is the main diagram that I used to create the pipeline.
 The only difference is that I opted to remove ALU_control and instead merge it with Control, to take care of all ALU ctrl stuff in `Control.sv`
@@ -34,4 +34,4 @@ I also added something unique to my processor called `Branch.sv`. Which takes in
 Outside of that, everything else is similar to the diagram.
 
 
-![hi reader](pipeline.png)
+![image link](pipeline.png)
