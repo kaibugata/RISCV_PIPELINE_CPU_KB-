@@ -1,84 +1,37 @@
 
-# Blinky SystemVerilog Template
+# RISC-V 5 Stage Pipelined Processor Prototype
 
-This project demonstrates a scalable SystemVerilog project template. It implements an overengineered "blinky" example working on multiple synthesis and simulation targets.
+This project demonstrates a 5 stage processor I made during the summer after taking my first Computer Architecture class.
+The template for this project was prvided by my professor Ethan Sifferman and therefore some things like the Makefile may not make sense in this context.
 
-## Dependencies
+## Description
 
-* <https://github.com/YosysHQ/oss-cad-suite-build/releases>
-* <https://github.com/zachjs/sv2v/releases>
-* <https://www.xilinx.com/support/download.html>
+This is the RTL for a 5 stage processor that I made from scratch. It is currently in a complete state but can be worked on to improve and change later. This processor works by taking in a file `instruction_memory_init_file.memb` which is located in `"rtl"`.
 
-## Running
+## Drawbacks/Things to improve on
 
-```bash
-git submodule update --init --recursive
+* Since i've only taken an intro class, I don't actually make a SoC where the processor gets the instructions from elsewhere. So I suppose I could use a fifo to push binary instructions into the instruction memory instead of using intiialization files.
+* One thing I really want to do is run static timing analysis on this. I was working on this using Xilinx Vivado and had trouble using their timing settings(I just dont know how to use it). My goal is to potentially run timing analysis so I can actually see what clock period this processor can run on and so I can make ome bottlenecks in the RTL faster.
+* I made the memory blocks using packed arrays ex: `logic [31:0] mem [44:0]` as such, for instructions with offsets like `"sw x1, 5(x2)"` or `"lw x3, 2(x7)"` they do not offset by bytes and instead offset by blocks. So the first instruction will store x1 at x2+5 -> x7 or it will load x7+2-> x9 at x3. This of course is not what I intended to do. In the future I might do research into figuring out how I can fix it.
 
-# simulate with Verilator
-make sim
+## Notable File Explanations
 
-# generic synthesis with Yosys, then simulate with Verilator
-make gls
+### [`".rtl/RISC_CPU.sv"`](./rtl/RISC_CPU.sv)
 
-# Icebreaker synthesis with Yosys/Icestorm, then simulate with Verilator
-make icestorm_icebreaker_gls
-# program Icebreaker volatile memory
-make icestorm_icebreaker_program
-# program Icebreaker non-volatile memory
-make icestorm_icebreaker_flash
-```
+The file RISC_CPU.sv is our TOP for the project and contains the main CPU
 
-## File Explanations
+### [`"dv/FullPipelineTB1.sv"`](./dv/FullPipelineTB1.sv)
 
-### [`".github/workflows"`](./.github/workflows)
+The file FullPipelineTB1.sv is our main testbench that we used to test the entire pipeline
 
-GitHub actions are set up to download the latest open-source tools and run all Makefile commands.
 
-### [`"dv"`](./dv) Design Verification
+## Pipeline Diagram
 
-The `"dv"` directory holds all testbenches and generic non-synthesizable code.
+This image below is the main diagram that I used to create the pipeline.
+The only difference is that I opted to remove ALU_control and instead merge it with Control, to take care of all ALU ctrl stuff in `Control.sv`
+I also added something unique to my processor called `Branch.sv`. Which takes in the result of the ALU and compares with the the instruction to see if the branch was taken or not.
 
-* The `blinky_runner` module in [`"dv/blinky_runner.sv"`](./dv/blinky_runner.sv) abstracts away the specifics for interfacing with the top module.
-* [`"dv/dv.f"`](./dv/dv.f) contains several useful Verilator simulation arguments: <https://veripool.org/guide/latest/exe_verilator.html>.
+Outside of that, everything else is similar to the diagram.
 
-### [`"misc"`](./misc) Miscellaneous Script(s)
 
-[`"misc/convert_filelist.py"`](./misc/convert_filelist.py) helps convert Verilator `.f` files into a format that can be interpreted by other tools. It may be overkill for most projects, but is quite useful when managing a lot of files.
-
-### [`"rtl"`](./rtl) (Register Transfer Level) Synthesizable SystemVerilog
-
-The `"rtl"` directory holds all synthesizable SystemVerilog, custom created for this project. Any IP should be included via `"third_party"`.
-
-[`"rtl/rtl.f"`](./rtl/rtl.f) lists all required RTL files in the project, including those from `"third_party"`.
-
-### [`"synth/yosys_generic"`](./synth/yosys_generic) Yosys Generic Target
-
-The purpose of the "yosys_generic" target is to run "gate-level" or "post-synthesis" simulation (GLS).
-
-* [`"synth/yosys_generic/yosys.tcl"`](./synth/yosys_generic/yosys.tcl): This is the TCL file to be passed to Yosys to perform generic synthesis. Note that [`prep`](https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/prep.html) is run instead of [`synth`](https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/synth.html) to limit the number of optimizations being run.
-* [`"synth/yosys_generic/gls.f"`](./synth/yosys_generic/gls.f): This file lists all the required RTL files to be simulated in `make gls`. Note that the Yosys generic techlib is included for simulation purposes: <https://github.com/YosysHQ/yosys/blame/main/techlibs/common/simlib.v>.
-* [`"synth/yosys_generic/blinky_runner.sv"`](./synth/yosys_generic/blinky_runner.sv): This file is similar to `"dv/blinky_runner.sv"`, in that it abstracts away the specifics of interfacing with the "yosys_generic" target. Note that `blinky_runner` needs to instantite the `blinky_sim` wrapper module, because Yosys will silently rename the `blinky` module because it has parameters. By parameterizing `blinky` inside `blinky_sim` and running Yosys on `blinky_sim`, `blinky_runner` can then instantiate `blinky_sim` directly, as `blinky_sim` does not have parameters.
-* [`"synth/yosys_generic/blinky_sim.sv"`](./synth/yosys_generic/blinky_sim.sv): This file is a wrapper that instantiates the parameterized `blinky` module, ensuring compatibility with Yosys by eliminating parameters at the top level. It also provides a central location to define any necessary parameters.
-
-### [`"synth/icestorm_icebreaker"`](./synth/icestorm_icebreaker) Icebreaker Target with Icestorm Flow
-
-The purpose of the "icestorm_icebreaker" target is for simulation and FPGA implementation.
-
-* [`"synth/icestorm_icebreaker/icebreaker.v"`](./synth/icestorm_icebreaker/icebreaker.v): This is the top-level module that exposes the Icebreaker's ports. Note the PLL that was created using `icepll`.
-* [`"synth/icestorm_icebreaker/nextpnr.pcf"`](./synth/icestorm_icebreaker/nextpnr.pcf): This Pin Constraints File is given to `nextpnr` to assign Verilog ports to the FPGA's pins.
-* [`"synth/icestorm_icebreaker/nextpnr.sdc"`](./synth/icestorm_icebreaker/nextpnr.sdc): This Synopsys Design Constraints file creates timing constraints in `nextpnr`. ([Supported SDC Commmands](https://github.com/YosysHQ/nextpnr/blob/master/common/kernel/sdc.cc))
-* [`"synth/icestorm_icebreaker/yosys.tcl"`](./synth/icestorm_icebreaker/yosys.tcl): This TCL file is passed to Yosys to perform synthesis mapped to iCE40 standard cells ([`"ice40/cells_sim.v"`](https://github.com/YosysHQ/yosys/blob/main/techlibs/ice40/cells_sim.v)).
-* [`"synth/icestorm_icebreaker/gls.f"`](./synth/icestorm_icebreaker/gls.f): This file lists all the required RTL files to be simulated in `make icestorm_icebreaker_gls`.
-* [`"synth/icestorm_icebreaker/blinky_runner.sv"`](./synth/icestorm_icebreaker/blinky_runner.sv): This file is similar to `"dv/blinky_runner.sv"`, in that it abstracts away the specifics of interfacing with the "icestorm_icebreaker" target. Also note that it overrides the output of the PLL, so that the simulation's timing is accurate.
-
-### [`"third_party"`](./third_party) Code From Outside This Project
-
-`"third_party"` should contain Git submodules and other code originating from other projects or sources.
-
-### [`"lint"`](./lint) Files
-
-Verilator Configuration File documentation: <https://veripool.org/guide/latest/exe_verilator.html#configuration-files>.
-
-### [`"Makefile"`](./Makefile)
-
-The Makefile creates and manages all the intermediate files created by each tool.
+![hi reader](pipeline.png)
