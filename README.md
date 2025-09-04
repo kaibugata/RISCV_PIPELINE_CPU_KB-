@@ -2,7 +2,7 @@
 # RISC-V 5 Stage Pipelined Processor Prototype
 
 This project demonstrates a 5 stage processor I made during the summer after taking my first Computer Architecture class.
-The template for this project was prvided by my professor Ethan Sifferman and therefore some things like the Makefile may not make sense in this context.
+The template for this project was provided by my professor Ethan Sifferman and therefore some things like the Makefile may not make sense in this context.
 
 ## Description
 
